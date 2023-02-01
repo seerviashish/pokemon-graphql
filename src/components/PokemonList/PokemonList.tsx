@@ -130,18 +130,21 @@ export const PokemonList = () => {
         noFilter: true,
       });
     }
-    console.log('search => ', searchInput);
   }, [searchInput]);
 
   const onClickListItem = (pokemonId: string) => () => {};
 
-  const removeMatch = (filter: 'types' | 'names') => () => {
+  const removeMatch = (filter: 'types' | 'names' | 'all') => () => {
     const filterData = { ...fieldForFilter };
     if (filter === 'names') {
       filterData.nameFilter = false;
     }
     if (filter === 'types') {
       filterData.typeFilter = false;
+    }
+    if (filter === 'all') {
+      filterData.typeFilter = false;
+      filterData.nameFilter = false;
     }
     if (!filterData.nameFilter && !filterData.typeFilter) {
       filterData.noFilter = true;
@@ -195,12 +198,38 @@ export const PokemonList = () => {
                 loading="lazy"
               />
               <span className={classes.info}>
-                <span className={classes.title}>{pokemonInfo.name}</span>
+                <span className={classes.title}>
+                  {pokemonInfo.name}
+                  {fieldForFilter.nameFilter &&
+                    pokemonInfoObject.isNameMatched && (
+                      <span className="token-count">
+                        {pokemonInfoObject.nameMatchToken.length}
+                      </span>
+                    )}
+                </span>
                 <span className={classes.number}>{pokemonInfo.number}</span>
                 <span className={classes.typesContainer}>
-                  {pokemonInfo.types?.map((type, index) => (
-                    <span key={`${pokemonInfo.id}-type-${index}`}>{type}</span>
-                  ))}
+                  {pokemonInfo.types?.map((type, index) => {
+                    const typeCount =
+                      pokemonInfoObject.isTypeMatched &&
+                      fieldForFilter.typeFilter
+                        ? pokemonInfoObject.typeMatchToken.filter(
+                            (typeString) =>
+                              type
+                                .toLowerCase()
+                                .includes(typeString.toLowerCase())
+                          ).length
+                        : 0;
+
+                    return (
+                      <span key={`${pokemonInfo.id}-type-${index}`}>
+                        {type}
+                        {typeCount > 0 && (
+                          <span className="token-count">{typeCount}</span>
+                        )}
+                      </span>
+                    );
+                  })}
                 </span>
               </span>
             </li>
@@ -238,6 +267,14 @@ export const PokemonList = () => {
                 close
               </span>
               {`${filteredData.typeMatched} Types matched`}
+            </span>
+          </div>
+        )}
+        {((fieldForFilter.typeFilter && filteredData.typeMatched > 0) ||
+          (fieldForFilter.nameFilter && filteredData.nameMatched > 0)) && (
+          <div>
+            <span className="clear" onClick={removeMatch('all')}>
+              {'Clear All'}
             </span>
           </div>
         )}
@@ -295,6 +332,15 @@ const useStyles = createUseStyles(
       fontSize: 'medium',
       fontWeight: 'bold',
       color: 'white',
+      '& .token-count': {
+        borderRadius: 25,
+        marginLeft: 7,
+        display: 'inline-block',
+        color: 'black',
+        fontWeight: 'bold',
+        backgroundColor: 'yellow',
+        padding: '0px 8px',
+      },
     },
     number: {
       fontSize: 'medium',
@@ -309,11 +355,14 @@ const useStyles = createUseStyles(
         padding: '0 10px',
         marginRight: 4,
         display: 'inline-block',
-        '& .highlight': {
-          borderRadius: 10,
+        '& .token-count': {
+          borderRadius: 25,
+          marginLeft: 7,
+          padding: '0px 8px',
           display: 'inline-block',
           color: 'black',
           fontWeight: 'bold',
+          backgroundColor: 'yellow',
         },
       },
     },
@@ -337,6 +386,15 @@ const useStyles = createUseStyles(
       flexDirection: 'row',
       margin: '10px 0',
       '& > div': {
+        '& .clear': {
+          backgroundColor: '#EC7063',
+          color: 'white',
+          fontWeight: 'bold',
+          cursor: 'pointer',
+          '&:hover': {
+            backgroundColor: '#E74C3C',
+          },
+        },
         '& > span': {
           padding: '2px 10px',
           color: 'black',
