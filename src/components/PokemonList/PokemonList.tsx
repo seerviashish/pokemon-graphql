@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Pokemon, useGetPokemons } from '../../hooks/useGetPokemons';
+import { useNavigate } from 'react-router-dom';
 import 'material-icons/iconfont/material-icons.css';
 
 type FilteredPokemon = {
@@ -13,6 +14,7 @@ type FilteredPokemon = {
 
 export const PokemonList = () => {
   const classes = useStyles();
+  const navigate = useNavigate();
   const [searchInput, setSearchInput] = useState('');
   const [filteredData, setFilteredData] = useState<{
     result: FilteredPokemon[];
@@ -132,7 +134,9 @@ export const PokemonList = () => {
     }
   }, [searchInput]);
 
-  const onClickListItem = (pokemonId: string) => () => {};
+  const onClickListItem = (pokemonId: string, pokemonName: string) => () => {
+    navigate(`/pokemon/${pokemonId}/${pokemonName}`);
+  };
 
   const removeMatch = (filter: 'types' | 'names' | 'all') => () => {
     const filterData = { ...fieldForFilter };
@@ -190,7 +194,7 @@ export const PokemonList = () => {
             <li
               className={classes.listItem}
               key={pokemonInfo.id}
-              onClick={onClickListItem(pokemonInfo.id)}
+              onClick={onClickListItem(pokemonInfo.id, pokemonInfo.name)}
             >
               <img
                 className={classes.image}
