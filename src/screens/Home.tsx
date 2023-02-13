@@ -54,3 +54,5 @@ const useStyles = createUseStyles(
   },
   { name: 'Home' }
 );
+
+export default Home;

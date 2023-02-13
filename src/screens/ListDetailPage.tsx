@@ -24,3 +24,5 @@ const useStyles = createUseStyles(
   },
   { name: 'ListPage' }
 );
+
+export default ListDetailPage;

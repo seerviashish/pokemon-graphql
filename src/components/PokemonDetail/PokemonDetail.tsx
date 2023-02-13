@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -7,10 +7,10 @@ import {
 } from '../../hooks/useGetPokemonDetail';
 import 'material-icons/iconfont/material-icons.css';
 
-type Props = {
+interface Props {
   pokemonId?: string;
   pokemonName?: string;
-};
+}
 
 export const PokemonDetail: React.FC<Props> = ({ pokemonId, pokemonName }) => {
   const classes = useStyles();
@@ -23,9 +23,9 @@ export const PokemonDetail: React.FC<Props> = ({ pokemonId, pokemonName }) => {
     pokemonName
   );
 
-  const onClose = () => {
+  const onClose = useCallback(() => {
     navigate('/pokemon');
-  };
+  }, []);
 
   return (
     <div className={classes.root}>

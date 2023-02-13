@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Pokemon, useGetPokemons } from '../../hooks/useGetPokemons';
 import { useNavigate } from 'react-router-dom';
@@ -134,9 +134,12 @@ export const PokemonList = () => {
     }
   }, [searchInput]);
 
-  const onClickListItem = (pokemonId: string, pokemonName: string) => () => {
-    navigate(`/pokemon/${pokemonId}/${pokemonName}`);
-  };
+  const onClickListItem = useCallback(
+    (pokemonId: string, pokemonName: string) => () => {
+      navigate(`/pokemon/${pokemonId}/${pokemonName}`);
+    },
+    []
+  );
 
   const removeMatch = (filter: 'types' | 'names' | 'all') => () => {
     const filterData = { ...fieldForFilter };
