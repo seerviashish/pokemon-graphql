@@ -128,7 +128,7 @@ class ErrorBoundary extends React.Component<
         return <FallbackComponent {...props} />;
       } else {
         throw new Error(
-          'react-error-boundary requires either a fallback, fallbackRender, or FallbackComponent prop'
+          'ErrorBoundary requires either a fallback, fallbackRender, or FallbackComponent prop'
         );
       }
     }
