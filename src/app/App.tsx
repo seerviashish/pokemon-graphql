@@ -1,11 +1,12 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { LayoutProvider } from '../contexts';
 import { Nav } from '../components';
 import { ApolloProvider } from '@apollo/client';
 import { client } from './client';
-import { withErrorBoundary } from '../screens/ErrorBoundary';
+import { ErrorBoundary } from '../screens/ErrorBoundary';
+import ErrorDetail from '../components/ErrorDetail';
 
 const Loading: React.FC = () => {
   return <div>{'Loading....'}</div>;
@@ -20,45 +21,60 @@ const ListDetailPage = React.lazy(() => import('../screens/ListDetailPage'));
 function App() {
   const classes = useStyles();
   return (
-    <ApolloProvider client={client}>
-      <LayoutProvider>
-        <div className={classes.root}>
-          <BrowserRouter>
-            <Nav />
-            <div className={classes.content}>
-              <div className={classes.scrollableArea}>
-                <Routes>
-                  <Route
-                    path="/"
-                    element={
-                      <Suspense fallback={<Loading />}>
-                        <Home />
-                      </Suspense>
-                    }
-                  />
-                  <Route
-                    path="/pokemon"
-                    element={
-                      <Suspense fallback={<Loading />}>
-                        <ListPage />
-                      </Suspense>
-                    }
-                  />
-                  <Route
-                    path="/pokemon/:pokemonId/:pokemonName"
-                    element={
-                      <Suspense fallback={<Loading />}>
-                        <ListDetailPage />
-                      </Suspense>
-                    }
-                  />
-                </Routes>
+    <ErrorBoundary
+      FallbackComponent={ErrorDetail}
+      onError={(error, errorInfo) => {
+        console.log('Error =: ', error, errorInfo);
+      }}
+    >
+      <ApolloProvider client={client}>
+        <LayoutProvider>
+          <div className={classes.root}>
+            <BrowserRouter>
+              <Nav />
+              <div className={classes.content}>
+                <div className={classes.scrollableArea}>
+                  <Routes>
+                    <Route
+                      path="/"
+                      element={
+                        <Suspense fallback={<Loading />}>
+                          <Home />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="/pokemon"
+                      element={
+                        <Suspense fallback={<Loading />}>
+                          <ListPage />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="/pokemon/:pokemonId/:pokemonName"
+                      element={
+                        <Suspense fallback={<Loading />}>
+                          <ListDetailPage />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="*"
+                      element={
+                        <Suspense fallback={<Loading />}>
+                          <Home />
+                        </Suspense>
+                      }
+                    />
+                  </Routes>
+                </div>
               </div>
-            </div>
-          </BrowserRouter>
-        </div>
-      </LayoutProvider>
-    </ApolloProvider>
+            </BrowserRouter>
+          </div>
+        </LayoutProvider>
+      </ApolloProvider>
+    </ErrorBoundary>
   );
 }
 
@@ -89,4 +105,4 @@ const useStyles = createUseStyles(
   { name: 'App' }
 );
 
-export default withErrorBoundary(App);
+export default App;
